@@ -36,8 +36,9 @@ public class HomeController {
             double monthlyPhoneDouble = Double.parseDouble(monthlyPhone);
             double weeklyTransportDouble = Double.parseDouble(weeklyTransport);
             double afterExpenses = calculateTotalAfterTax(new double[] {monthlyRentDouble,
-            weeklyFoodDouble, monthlyStreamingDouble, carPaymentDouble, monthlyInsuranceDouble,
-            monthlyPhoneDouble, weeklyTransportDouble}, annualIncomeDouble);
+                            monthlyStreamingDouble, carPaymentDouble, monthlyInsuranceDouble,
+                            monthlyPhoneDouble}, new double[] {weeklyFoodDouble,
+                            weeklyTransportDouble}, annualIncomeDouble);
             if (afterExpenses == -1) {
                 model.addAttribute("errorText",
                         "Internal error occurred while calculating total!");
@@ -53,11 +54,26 @@ public class HomeController {
         return "result";
     }
 
-    private double calculateTotalAfterTax(double[] expenses, double income) {
+    private double calculateTotalAfterTax(double[] monthly, double[] weekly, double income) {
         double tax = calculateFederalTax(income);
-        double totalExpense = Arrays.stream(expenses).reduce(Double::sum).orElseGet(() -> -1);
+        double totalExpense = calculateTotalExpenses(monthly, weekly);
+        System.out.println("Total expense: " + totalExpense);
         if (totalExpense == -1) return -1;
-        return income - (income * tax) - totalExpense;
+        double afterTax = income - (income * tax);
+        System.out.println("After Tax: " + afterTax);
+        return afterTax - totalExpense;
+    }
+
+    private double calculateTotalExpenses(double[] monthly, double[] weekly) {
+        double totalMonth = Arrays.stream(monthly)
+                .map(i -> i * 12)
+                .reduce(Double::sum)
+                .orElseGet(() -> -1);
+        double totalWeekly = Arrays.stream(weekly)
+                .map(i -> (i * 4) * 12)
+                .reduce(Double::sum)
+                .orElseGet(() -> -1);
+        return totalMonth + totalWeekly;
     }
 
     private double calculateFederalTax(double income) {
@@ -69,6 +85,7 @@ public class HomeController {
         else if (income > 191950 && income < 243725) tax = 0.32;
         else if (income > 243725 && income < 609350) tax = 0.35;
         else tax = 0.37;
+        System.out.println("Tax calculated: " + tax);
         return tax;
     }
 
