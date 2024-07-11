@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Arrays;
 
+/**
+ * @author Nick
+ */
 @Controller
 public class HomeController {
 
@@ -54,16 +57,27 @@ public class HomeController {
         return "result";
     }
 
+    /**
+     * Determines the remainder of the users income after expenses and taxes
+     * @param monthly the users monthly expenses
+     * @param weekly the users weekly expenses
+     * @param income the users total annual income
+     * @return the users remaining income
+     */
     private double calculateTotalAfterTax(double[] monthly, double[] weekly, double income) {
         double tax = calculateFederalTax(income);
         double totalExpense = calculateTotalExpenses(monthly, weekly);
-        System.out.println("Total expense: " + totalExpense);
         if (totalExpense == -1) return -1;
         double afterTax = income - (income * tax);
-        System.out.println("After Tax: " + afterTax);
         return afterTax - totalExpense;
     }
 
+    /**
+     * Reduces all expenses down to one number after multiplying them to a yearly total
+     * @param monthly array of all monthly expenses
+     * @param weekly array of all weekly expenses
+     * @return the total expenses
+     */
     private double calculateTotalExpenses(double[] monthly, double[] weekly) {
         double totalMonth = Arrays.stream(monthly)
                 .map(i -> i * 12)
@@ -76,6 +90,11 @@ public class HomeController {
         return totalMonth + totalWeekly;
     }
 
+    /**
+     * Calculate the tax percentage of the users income
+     * @param income the users annual income
+     * @return the total federal tax percent represented as a decimal double
+     */
     private double calculateFederalTax(double income) {
         double tax;
         if (income < 11600) tax = 0.10;
@@ -85,7 +104,6 @@ public class HomeController {
         else if (income > 191950 && income < 243725) tax = 0.32;
         else if (income > 243725 && income < 609350) tax = 0.35;
         else tax = 0.37;
-        System.out.println("Tax calculated: " + tax);
         return tax;
     }
 
