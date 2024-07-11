@@ -40,6 +40,12 @@
         <p>Your recommended monthly saving deposit is: ${savingsDeposit}</p>
         <p>${lowRemainderMessage}</p>
       </div>
+      <div class="style1 align-center">
+        <h3><u>Budget Rating:</u></h3>
+        <p>Your budget rating reflects how well you will be able to spend, cover your expenses,
+        invest in your savings, and pay your taxes.</p>
+        <h2>${budgetRating}</h2>
+      </div>
     </div>
   </body>
 </html>

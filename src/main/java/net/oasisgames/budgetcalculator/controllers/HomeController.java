@@ -198,11 +198,29 @@ public class HomeController {
                 formatStringToCurrency(((income * 0.2) / 12) + "") :
                 formatStringToCurrency((remainder * 0.75) / 12 + "");
         model.addAttribute("savingsDeposit", savingsDeposit);
+        setBudgetRatingDiv(model, remainder, income);
         if (highRemainder) return;
         model.addAttribute("lowRemainderMessage",
                 "Since your remaining balance was below the 20% income threshold " +
                         "we estimated your monthly savings deposit using 75% of your remaining " +
                         "income!");
+    }
+
+    /**
+     * Sets the parameters for the Budget Rating Div in result.jsp
+     * @param model Spring Model
+     * @param remainder the users remaining income after expenses and taxes
+     * @param income the users annual income
+     */
+    private void setBudgetRatingDiv(Model model, double remainder, double income) {
+        double percentRemainder = remainder / income;
+        String rating;
+        if (percentRemainder < 0.05) rating = "Brother your cooked...";
+        else if (percentRemainder > 0.05 && percentRemainder < 0.1) rating = "Poor";
+        else if (percentRemainder > 0.1 && percentRemainder < 0.2) rating = "Decent";
+        else if (percentRemainder > 0.2 && percentRemainder < 0.3) rating = "Good";
+        else rating = "Excellent";
+        model.addAttribute("budgetRating", rating);
     }
 
 }
